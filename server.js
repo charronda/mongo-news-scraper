@@ -41,8 +41,8 @@ app.engine("handlebars", exphbs({
 app.set("view engine", "handlebars");
 
 // Database configuration with mongoose
-//mongoose.connect("mongodb://heroku_jmv816f9:5j1nd4taq42hi29bfm5hobeujd@ds133192.mlab.com:33192/heroku_jmv816f9");
-mongoose.connect("mongodb://localhost/5000");
+mongoose.connect("mongdb://heroku_dzp73wg8:86as7aurduqdid9ievs2gurb5@ds263639.mlab.com:63639/heroku_dzp73wg8");
+//mongoose.connect("mongodb://localhost/5000");
 var db = mongoose.connection;
 
 // Show any mongoose errors
