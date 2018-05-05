@@ -35,14 +35,21 @@ app.set("view engine", "handlebars");
 
 // Database configuration with mongoose
 //mongoose.connect("mongdb://heroku_dzp73wg8:86as7aurduqdid9ievs2gurb5@ds263639.mlab.com:63639/heroku_dzp73wg8");
-mongoose.connect("mongodb://localhost/5000");
-var db = mongoose.connection;
+//mongoose.connect("mongodb://localhost/scrapdb");
 
-// mongoose error handeling
-db.on("error", function(error) {
-  console.log("Mongoose Error: ", error);
+mongoose.connect("mongodb://localhost/scrapdb", {
+  useMongoClient: true
 });
 
+// mongoose error handeling
+//db.on(5000, function(error) {
+  //console.log("Mongoose Error: ", error);
+//});
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  // we're connected!
+});
 db.once("open", function() {
   console.log("Mongoose connection successful.");
 });
@@ -70,34 +77,35 @@ app.get("/saved", function(req, res) {
 
 app.get("/scrape", function(req, res) {
 
-  request("https://www.mdjonline.com/", function(error, response, html) {
+  request("http://www.mdjonline.com/news/lifestyle/", function(error, res, html) {
 
     var $ = cheerio.load(html);
 
-    $(".card-headline").each(function(i, element) {
+    $(".card-body").each(function(i, element) {
 
       var result = {};
 
-      result.title = $(this).children("h2").text();
-      result.summary = $(this).children(".summary").text();
-      result.link = $(this).children("h2").children("a").attr("href");
+      result.title = $(this).children("h3").text();
+      result.summary = $(this).children("a").text();
+      //result.link = $(this).children("h2").children("a").attr("href");
 
       var entry = new Article(result);
 
       // Now, save that entry to the db
-      entry.save(function(err, doc) {
+      entry.save(function(err, res) {
         // Log any errors
         if (err) {
           console.log(err);
         }
         // Or log the doc
         else {
-          console.log(doc);
+          console.log(result);
         }
       });
 
     });
-        res.send("Scrape Complete");
+        //res.send("Scrape Complete");
+        res.json('response');
 
   });
 });
@@ -105,13 +113,13 @@ app.get("/scrape", function(req, res) {
 // This will get the articles we scraped from the mongoDB
 app.get("/articles", function(req, res) {
   // Grab doc in the Articles array
-  Article.find({}, function(error, doc) {
+  Article.find({}, function(error, res) {
 
     if (error) {
       console.log(error);
     }
     else {
-      res.json(doc);
+      res.json(res);
     }
   });
 });
@@ -122,13 +130,13 @@ app.get("/articles/:id", function(req, res) {
 
   .populate("note")
 
-  .exec(function(error, doc) {
+  .exec(function(error, res) {
 
     if (error) {
       console.log(error);
     }
     else {
-      res.json(doc);
+      res.json(res);
     }
   });
 });
@@ -143,7 +151,8 @@ app.post("/articles/save/:id", function(req, res) {
           console.log(err);
         }
         else {
-          res.send(doc);
+          //res.send(doc);
+          res.json('response');
         }
       });
 });
