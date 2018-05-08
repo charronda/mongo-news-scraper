@@ -37,15 +37,15 @@ app.set("view engine", "handlebars");
 //mongoose.connect("mongdb://heroku_dzp73wg8:86as7aurduqdid9ievs2gurb5@ds263639.mlab.com:63639/heroku_dzp73wg8");
 //mongoose.connect("mongodb://localhost/scrapdb");
 
-mongoose.connect("mongodb://localhost/scrapdb", {
-  useMongoClient: true
-});
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/5000";
+mongoose.connect(MONGODB_URI);
+var db = mongoose.connection;
 
 // mongoose error handeling
 //db.on(5000, function(error) {
   //console.log("Mongoose Error: ", error);
 //});
-var db = mongoose.connection;
+//var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
   // we're connected!
